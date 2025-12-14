@@ -1,3 +1,6 @@
-print("Hello")
+def is_year_leap():
 
-print("Hello git")
+
+year = input("what your years? ")
+
+print(year)
