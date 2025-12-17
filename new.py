@@ -1,15 +1,16 @@
 import datetime
 from datetime import datetime
 from datetime import timedelta
+from datetime import date, datetime, timedelta
+
 
 def string_to_date(date_string):   
-    date_object = datetime.strptime(date_string, "%Y.%m.%d").date()
-    return date_object
+    return datetime.strptime(date_string, "%Y.%m.%d").date()
 
 def date_to_string(converted_date):
     return converted_date.strftime("%Y.%m.%d")
 
-def prepare_user_list(users):
+def prepare_user_list(users): 
     for user in users:
         for key in user:
             if key == "birthday":
@@ -17,27 +18,37 @@ def prepare_user_list(users):
     return users
 
 def find_next_weekday(converted_date, weekday):
-    x = weekday - (datetime.weekday(converted_date))
-    if not (x <= 0):
-        converted_date = converted_date + timedelta(days=x)
-    else:
-        converted_date = converted_date + timedelta(days=7+x)
-    return converted_date
+    days_ahead = weekday - converted_date.weekday()
+    if days_ahead <= 0:
+        days_ahead += 7
+    return converted_date + timedelta(days=days_ahead)
 
 def get_upcoming_birthdays(new_users, days=7):
     upcoming_birthdays = []
-    today = datetime.today()
-
+    today = "2023.03.20"
+    today =string_to_date(today)
     for user in new_users:
-        user["birthday"].replace(year = today.year)
-        birthday_this_year = string_to_date(user["birthday"])
-        birthday_this_year = user["birthday"].strftime("%d")
-        x = (birthday_this_year - today).days
-        if 0 <=x and x<= days:
-            upcoming_birthdays.append({"name": user["name"], "birthday": string_to_date(user["birthday"])})
+        birthday_this_year = user["birthday"].replace(year = today.year)
         
+        x = (birthday_this_year - today).days
+        
+        if 0 <=x and x<= days:
+            upcoming_birthdays.append({"name": user["name"], "congratulation_date": date_to_string(birthday_this_year)})
     return upcoming_birthdays
 
+def adjust_for_weekend(birthday):
+    '''for user in birthday_user:
+        y = string_to_date(user["congratulation_date"])
+        print(type(y))
+        if y.weekday() >= 5:
+            x = find_next_weekday(y,0)
+            birthday_user.append({"name": user["name"], "send_mail": date_to_string(x)})'''
+    if isinstance(birthday, str):
+        birthday = string_to_date(birthday) 
+    if birthday.weekday() >= 5:
+        return find_next_weekday(birthday,0)
+    else:
+        return birthday
 
 users = [
     {"name": "Bill Gates", "birthday": "1955.03.25"},
@@ -60,8 +71,9 @@ date_string = date_to_string(converted_date)
 print(date_string)
 new_users = prepare_user_list(users)
 print(new_users)
+print()
 birthday_user = get_upcoming_birthdays(new_users)
 print(birthday_user)
-
-
+birthdayy = adjust_for_weekend("2024.04.27")
+print(birthdayy)
 
